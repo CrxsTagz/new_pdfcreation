@@ -88,9 +88,9 @@ def pdfPrint(pdf, authenticationMode, wirelessPrivacy, cyphering):
             pass
     #return pdf
 
-def pdfGenerator(customerName):
-    # WSSid = int(WSSid)
-    customerName = customerName
+def pdfGenerator(WSSid,customerName):
+    WSSid = int(WSSid)
+    customerName = "Cris"
     # save FPDF class into a variable pdf
     pdf = FPDF('P', 'mm', (300, 150))
     date = datetime. now(). strftime("%Y_%m_%d-%I-%M-%S_%p")
@@ -107,9 +107,9 @@ def pdfGenerator(customerName):
     # font arial bold 15pts
     pdf.set_font('Arial', 'B', 15)
     # move to the right
-    pdf.cell(125)
+    pdf.cell(110)
     # Title
-    pdf.cell(30, 10, 'SIFI WSS', 1, 0, 'C')
+    pdf.cell(100, 100, 'SIFI Wireless Security Auditing','C')
     # Line break
     pdf.ln(20)
     Assesment_ID = 0
@@ -134,18 +134,19 @@ def pdfGenerator(customerName):
             print("handshake  = ", row[4])
             print("cracked_password  = ", row[5])
             print("test_type  = ", row[6], "\n")
-            # print("Customer Name  = ", row[7], "\n")
+            print("Customer Name  = ", row[7], "\n")
             if row[4] is not None:
                 print("Se ha capturado el handshake")
             if row[5] is not None:
                 print("Se ha capturado la contraseña")
     except Error as e:
         print("Error while connecting to MySQL", e)
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-        print("MySQL connection is closed")
+    # finally:
+    #     if connection.is_connected():
+    #         cursor.close()
+    #         connection.close()
+    #     print("MySQL connection is closed")
+    pdf.add_page()
     #create cells 
     pdf.set_font("Arial", 'B', size= 16)
     pdf.cell(200,10, txt= "Records capturados del Assessment:", align= 'L')
@@ -155,8 +156,8 @@ def pdfGenerator(customerName):
     pdf.cell(200, 10,  txt= f"- BSSID : {row[1]}", ln= 4, align= 'L')
     pdf.cell(200, 10,  txt= f"- ESSID : {row[2]}", ln= 5, align= 'L')
     pdf.cell(200, 10,  txt= f"- Agente SIFI : {row[3]}", ln= 6, align= 'L')
-    pdf.cell(200, 10,  txt= f"- El handshake capturado es : {row[4]}", ln= 7, align= 'L')
-    pdf.cell(200, 10,  txt= f"- Contraseña del AP : {row[5]}", ln= 8, align= 'L')
+    # pdf.cell(200, 10,  txt= f"- El handshake capturado es : {row[4]}", ln= 7, align= 'L')
+    # pdf.cell(200, 10,  txt= f"- Contraseña del AP : {row[5]}", ln= 8, align= 'L')
     pdf.cell(200, 10,  txt= f"- Tipo de test realizado: {row[6]}", ln= 9, align= 'L')
     #pdf.cell(200, 10,  txt= f"Empresa/Cliente: {row[7]}", ln= 10, align= 'L')
     if row[4] is not None:
@@ -215,6 +216,13 @@ def pdfGenerator(customerName):
         pdf.set_font("Arial", 'BI', size= 14)
         pdf.cell(-120)
         pdf.set_font("Arial", 'BI', size= 13)
+
+        cursor = connection.cursor()
+        sql_select_Query = "SELECT * FROM wss WHERE wssID =" + str(WSSid) + ";"
+        pdf.cell(200, 10,  txt= f"- El handshake capturado es : {row[4]}", ln= 7, align= 'L')
+        pdf.cell(200, 10,  txt= f"- Contraseña del AP : {row[5]}", ln= 8, align= 'L') 
+        cursor.execute(sql_select_Query)
+
         
         pdf.set_text_color(0,0,0)
         pdf.cell(200, 10,  txt= "Según la tabla de valoración SIFI, el estado de seguridad es:", ln= 13, align= 'L')
@@ -487,4 +495,4 @@ def pdfGenerator(customerName):
     #return pdfFilePath
     l2pdfGenerator(80)
 
-pdfGenerator("Pucmm")
+pdfGenerator(customerName='PUCMM', WSSid= 5)
